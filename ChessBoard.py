@@ -72,26 +72,37 @@ class ChessBoard:
         del self.pieces[x, y]
 
     def select(self, x, y, player_is_red):
+        # 返回true，代表走子完成，返回false，代表走子未完成
+        # 如果没有选子，那么要先选自己要走的子
         if not self.selected_piece:
+            # 如果选的是自己的子
             if (x, y) in self.pieces and self.pieces[x, y].is_red == player_is_red:
+                # 改变board上的子的状态，以及board上面选了那个子
                 self.pieces[x, y].selected = True
                 self.selected_piece = self.pieces[x, y]
             return False
 
+        # 如果选中的不是子
         if not (x, y) in self.pieces:
+            # 如果前一次点击已经选了子了
             if self.selected_piece:
                 ox, oy = self.selected_piece.x, self.selected_piece.y
+                # 如果能往这里走
                 if self.can_move(ox, oy, x-ox, y-oy):
+                    # 走子，返回走子完成，释放selected piece
                     self.move(ox, oy, x-ox, y-oy)
                     self.pieces[x,y].selected = False
                     self.selected_piece = None
                     return True
+            # 否则返回false
             return False
 
         if self.pieces[x, y].selected:
+        # 选同一个子
             return False
 
         if self.pieces[x, y].is_red != player_is_red:
+        # 吃对方子的情况。
             ox, oy = self.selected_piece.x, self.selected_piece.y
             if self.can_move(ox, oy, x-ox, y-oy):
                 self.move(ox, oy, x-ox, y-oy)
